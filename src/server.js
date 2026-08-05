@@ -25,7 +25,15 @@ export function createApp() {
     }
   });
 
-  app.use(express.static(path.join(__dirname, "..", "public")));
+  app.use(
+    express.static(path.join(__dirname, "..", "public"), {
+      etag: true,
+      lastModified: true,
+      setHeaders: (res) => {
+        res.setHeader("Cache-Control", "no-cache");
+      },
+    }),
+  );
 
   return app;
 }
