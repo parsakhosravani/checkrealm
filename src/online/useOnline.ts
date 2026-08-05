@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { setSaveScope } from '../game/save'
 import type { GameState } from '../game/types'
 import {
   api,
@@ -62,6 +63,7 @@ export function useOnline(): Online {
       try {
         const { user: me } = await api.me()
         if (cancelled) return
+        setSaveScope(me.name)
         setUser(me)
         await loadServerSave()
       } catch {
@@ -147,6 +149,7 @@ export function useOnline(): Online {
             ? await api.login(username, password)
             : await api.register(username, password)
         setToken(token)
+        setSaveScope(me.name)
         setUser(me)
         await loadServerSave()
         return true
@@ -172,6 +175,7 @@ export function useOnline(): Online {
   const logout = useCallback(() => {
     api.logout().catch(() => {})
     setToken(null)
+    setSaveScope(null)
     setUser(null)
     setServerSave(null)
     setEntries([])
