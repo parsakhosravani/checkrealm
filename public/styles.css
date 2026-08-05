@@ -1,0 +1,202 @@
+:root {
+  --bg: #0b1020;
+  --bg-soft: #141b34;
+  --card: #1a2340;
+  --text: #eef1fb;
+  --muted: #9aa6c9;
+  --accent: #6c8cff;
+  --accent-2: #48e0b0;
+  --danger: #ff6b6b;
+  --warn: #ffca57;
+  --radius: 16px;
+  --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(1200px 600px at 15% -10%, rgba(108, 140, 255, 0.25), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(72, 224, 176, 0.18), transparent 55%),
+    var(--bg);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.shell {
+  width: 100%;
+  max-width: 640px;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.badge {
+  display: inline-block;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  color: var(--accent-2);
+  background: rgba(72, 224, 176, 0.1);
+  border: 1px solid rgba(72, 224, 176, 0.25);
+  padding: 6px 12px;
+  border-radius: 999px;
+  margin-bottom: 18px;
+}
+
+h1 {
+  font-size: clamp(28px, 5vw, 44px);
+  margin: 0 0 10px;
+  line-height: 1.1;
+}
+
+.subtitle {
+  color: var(--muted);
+  margin: 0;
+  font-size: 16px;
+}
+
+.check-form {
+  display: flex;
+  gap: 10px;
+  background: var(--card);
+  padding: 10px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.check-form input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: var(--bg-soft);
+  color: var(--text);
+  font-size: 16px;
+  padding: 14px 16px;
+  border-radius: 12px;
+}
+
+.check-form input::placeholder {
+  color: #6d78a0;
+}
+
+.check-form button {
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0b1020;
+  padding: 0 22px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  transition: transform 0.05s ease, opacity 0.2s ease;
+}
+
+.check-form button:hover {
+  opacity: 0.92;
+}
+
+.check-form button:active {
+  transform: translateY(1px);
+}
+
+.check-form button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.result {
+  margin-top: 22px;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.result-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.result-emoji {
+  font-size: 32px;
+}
+
+.result-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.result-sub {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  word-break: break-all;
+}
+
+.verdict-real .result-title {
+  color: var(--accent-2);
+}
+.verdict-suspicious .result-title {
+  color: var(--warn);
+}
+.verdict-unreachable .result-title {
+  color: var(--danger);
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.cell {
+  background: var(--card);
+  padding: 16px 20px;
+}
+
+.cell .label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.cell .value {
+  font-size: 16px;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.error-note {
+  padding: 14px 20px;
+  margin: 0;
+  color: var(--danger);
+  font-size: 14px;
+  background: rgba(255, 107, 107, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 26px;
+}
