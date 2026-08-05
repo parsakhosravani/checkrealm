@@ -18,7 +18,7 @@ export type BuildingId =
 
 export type UnitId = 'pawn' | 'knight' | 'bishop' | 'rook' | 'queen'
 
-export type ViewId = 'kingdom' | 'army' | 'map' | 'reports'
+export type ViewId = 'kingdom' | 'army' | 'map' | 'reports' | 'leaderboard'
 
 export interface BuildingDef {
   id: BuildingId

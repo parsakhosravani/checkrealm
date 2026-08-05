@@ -46,10 +46,8 @@ export function createHub(store) {
     },
     handleUpgrade(req, socket, head) {
       const url = new URL(req.url, 'http://localhost')
-      if (url.pathname !== '/ws') {
-        socket.destroy()
-        return
-      }
+      // Other upgrade listeners (e.g. Vite HMR in dev) own non-/ws sockets.
+      if (url.pathname !== '/ws') return
       const user = sessionUser(store, url.searchParams.get('token'))
       if (!user) {
         socket.destroy()

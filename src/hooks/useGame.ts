@@ -38,6 +38,13 @@ export function useGame() {
     setError(null)
   }, [])
 
+  const adoptState = useCallback((incoming: GameState) => {
+    const synced = tick(incoming)
+    setState(synced)
+    saveGame(synced)
+    setError(null)
+  }, [])
+
   const continueGame = useCallback(() => {
     const saved = loadGame()
     if (!saved) {
@@ -52,6 +59,12 @@ export function useGame() {
 
   const resign = useCallback(() => {
     clearSave()
+    setState(null)
+    setError(null)
+  }, [])
+
+  /** Leave the game without destroying the save (e.g. on sign-out). */
+  const suspend = useCallback(() => {
     setState(null)
     setError(null)
   }, [])
@@ -125,7 +138,9 @@ export function useGame() {
     hasSave: !!loadGame() || !!state,
     startGame,
     continueGame,
+    adoptState,
     resign,
+    suspend,
     selectVillage,
     upgrade,
     train,

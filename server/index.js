@@ -28,20 +28,22 @@ async function main() {
     app.get(/^\/(?!api\/|ws).*/, (_req, res) => {
       res.sendFile(path.join(dist, 'index.html'))
     })
-  } else {
+  }
+
+  const server = http.createServer(app)
+  server.on('upgrade', (req, socket, head) => hub.handleUpgrade(req, socket, head))
+
+  if (!IS_PROD) {
     // Dev: mount Vite as middleware so the game, API and WebSocket all share
     // one origin on one port (matches the Cloud Agent environment on :3000).
     const { createServer: createViteServer } = await import('vite')
     const vite = await createViteServer({
       root: ROOT,
-      server: { middlewareMode: true },
+      server: { middlewareMode: true, hmr: { server } },
       appType: 'spa',
     })
     app.use(vite.middlewares)
   }
-
-  const server = http.createServer(app)
-  server.on('upgrade', (req, socket, head) => hub.handleUpgrade(req, socket, head))
 
   server.listen(PORT, () => {
     console.log(`[checkrealm] ${IS_PROD ? 'production' : 'dev'} server on http://localhost:${PORT}`)

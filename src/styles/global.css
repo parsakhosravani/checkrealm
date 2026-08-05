@@ -912,9 +912,244 @@ a {
   50% { opacity: 0.9; }
 }
 
+/* ---- Online: auth ---- */
+.auth {
+  width: 100%;
+  max-width: 26rem;
+}
+
+.auth__tabs {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.9rem;
+}
+
+.auth__tab {
+  flex: 1;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--line);
+  background: rgba(10, 18, 14, 0.6);
+  color: var(--ivory-dim);
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.auth__tab:hover {
+  color: var(--ivory);
+}
+
+.auth__tab.is-active {
+  color: var(--gold-bright);
+  border-color: var(--gold);
+  background: rgba(201, 162, 39, 0.1);
+}
+
+.auth__form {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.auth__error {
+  margin: 0;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid rgba(181, 74, 58, 0.6);
+  background: rgba(42, 24, 20, 0.85);
+  color: #f0d2cc;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  animation: rise-in 0.25s ease both;
+}
+
+.auth__hint {
+  margin: 0.35rem 0 0;
+  color: var(--ivory-dim);
+  font-size: 0.82rem;
+}
+
+.auth__welcome {
+  margin: 0 0 0.75rem;
+  color: var(--ivory-dim);
+}
+
+.auth__welcome strong {
+  color: var(--gold-bright);
+}
+
+/* ---- Online: topbar status ---- */
+.topbar__status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.score-chip,
+.presence-chip {
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(10, 18, 14, 0.6);
+  font-size: 0.82rem;
+  color: var(--ivory-dim);
+  white-space: nowrap;
+}
+
+.score-chip {
+  color: var(--gold-bright);
+}
+
+.presence-chip {
+  color: #7a8a7a;
+  transition: color 0.3s ease;
+}
+
+.presence-chip.is-live {
+  color: #5fce8f;
+}
+
+/* ---- Online: leaderboard ---- */
+.leaderboard {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr);
+  gap: 1rem;
+  align-items: start;
+  max-width: 68rem;
+  margin: 0 auto;
+}
+
+.leaderboard__side {
+  display: grid;
+  gap: 1rem;
+}
+
+.leaderboard__empty {
+  color: var(--ivory-dim);
+  margin: 0.5rem 0;
+}
+
+.leaderboard__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.leaderboard__table th {
+  text-align: left;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ivory-dim);
+  padding: 0.35rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.leaderboard__table td {
+  padding: 0.55rem 0.6rem;
+  border-bottom: 1px solid rgba(201, 162, 39, 0.12);
+}
+
+.leaderboard__table tr.is-you td {
+  background: rgba(201, 162, 39, 0.09);
+  color: var(--gold-bright);
+}
+
+.leaderboard__rank {
+  font-family: var(--font-display);
+  color: var(--gold-bright);
+  width: 2.4rem;
+}
+
+.you-tag {
+  display: inline-block;
+  margin-left: 0.45rem;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--gold);
+  border-radius: var(--radius);
+}
+
+.live-dot {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #7a8a7a;
+}
+
+.live-dot.is-live {
+  color: #5fce8f;
+  animation: pulse-ring 2.4s ease-in-out infinite;
+}
+
+.online-count {
+  font-family: var(--font-display);
+  color: var(--gold-bright);
+  font-size: 1.1rem;
+}
+
+.online-pill {
+  color: #5fce8f;
+  font-size: 0.82rem;
+}
+
+.offline-pill {
+  color: var(--ivory-dim);
+  font-size: 0.82rem;
+}
+
+.online-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.herald-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+  max-height: 20rem;
+  overflow-y: auto;
+}
+
+.herald-list li {
+  display: grid;
+  gap: 0.15rem;
+  font-size: 0.88rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid rgba(201, 162, 39, 0.12);
+  animation: rise-in 0.3s ease both;
+}
+
+.herald-time {
+  font-size: 0.72rem;
+  color: var(--ivory-dim);
+  letter-spacing: 0.06em;
+}
+
+@media (max-width: 900px) {
+  .leaderboard {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 720px) {
   .topbar {
     padding: 0.75rem;
+  }
+
+  .topbar__status {
+    order: 2;
   }
 
   .resources {
