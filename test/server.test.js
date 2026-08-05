@@ -120,6 +120,46 @@ test('leaderboard sorts by score', async () => {
   assert.ok(res.body.entries.some((e) => e.name === 'Merlin' && e.score === 420))
 })
 
+test('hubless mode (serverless): herald persists, presence falls back to lastSeen', async () => {
+  const store = createStore(path.join(tmpDir, 'hubless.json'))
+  const app = createApp(store, null)
+  const srv = http.createServer(app)
+  await new Promise((resolve) => srv.listen(0, resolve))
+  const hublessBase = `http://localhost:${srv.address().port}`
+
+  const call = async (method, url, body, token) => {
+    const res = await fetch(`${hublessBase}${url}`, {
+      method,
+      headers: {
+        'content-type': 'application/json',
+        ...(token ? { authorization: `Bearer ${token}` } : {}),
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    })
+    return { status: res.status, body: await res.json() }
+  }
+
+  try {
+    const reg = await call('POST', '/api/auth/register', { username: 'Percival', password: 'quest99' })
+    assert.equal(reg.status, 201)
+
+    // The founding announcement is persisted and readable without a socket.
+    const herald = await call('GET', '/api/herald')
+    assert.equal(herald.status, 200)
+    assert.ok(herald.body.herald.some((e) => e.message.includes('Percival')))
+
+    // Fresh lastSeen marks the player online without any WebSocket.
+    const online = await call('GET', '/api/online')
+    assert.deepEqual(online.body.online, ['Percival'])
+
+    const lb = await call('GET', '/api/leaderboard')
+    const me = lb.body.entries.find((e) => e.name === 'Percival')
+    assert.equal(me.online, true)
+  } finally {
+    await new Promise((resolve) => srv.close(resolve))
+  }
+})
+
 test('leaderboard helper caps and sorts', () => {
   const store = createStore(path.join(tmpDir, 'unused.json'))
   for (let i = 0; i < 40; i++) {

@@ -31,7 +31,15 @@ async function main() {
   }
 
   const server = http.createServer(app)
-  server.on('upgrade', (req, socket, head) => hub.handleUpgrade(req, socket, head))
+  // CHECKREALM_NO_WS simulates a host without WebSocket support (e.g. serverless)
+  // so the client's polling fallback can be exercised locally.
+  if (process.env.CHECKREALM_NO_WS) {
+    server.on('upgrade', (req, socket) => {
+      if (new URL(req.url, 'http://localhost').pathname === '/ws') socket.destroy()
+    })
+  } else {
+    server.on('upgrade', (req, socket, head) => hub.handleUpgrade(req, socket, head))
+  }
 
   if (!IS_PROD) {
     // Dev: mount Vite as middleware so the game, API and WebSocket all share
