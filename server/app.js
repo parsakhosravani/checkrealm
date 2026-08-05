@@ -4,6 +4,30 @@ import { hashPassword, newId, newToken, verifyPassword } from './auth.js'
 const USERNAME_RE = /^[a-zA-Z0-9_ ]{3,20}$/
 const MAX_SAVE_BYTES = 512 * 1024
 const LEADERBOARD_SIZE = 25
+const HERALD_LOG_SIZE = 40
+/** Without a live socket, anyone seen this recently counts as online. */
+const ONLINE_WINDOW_MS = 45_000
+
+/** Append to the persistent world feed and push it to live sockets. */
+export function postHerald(store, hub, message, from = null) {
+  const entry = { at: Date.now(), from, message }
+  store.data.herald.push(entry)
+  if (store.data.herald.length > HERALD_LOG_SIZE) {
+    store.data.herald.splice(0, store.data.herald.length - HERALD_LOG_SIZE)
+  }
+  store.save()
+  hub?.broadcastHerald(entry)
+  return entry
+}
+
+export function onlineNames(store, hub = null) {
+  const names = new Set(hub ? hub.onlineNames() : [])
+  const cutoff = Date.now() - ONLINE_WINDOW_MS
+  for (const user of Object.values(store.data.users)) {
+    if ((user.lastSeen ?? 0) >= cutoff) names.add(user.name)
+  }
+  return [...names].sort((a, b) => a.localeCompare(b))
+}
 
 export function publicUser(user) {
   return {
@@ -87,7 +111,7 @@ export function createApp(store, hub = null) {
     users()[name.toLowerCase()] = user
     const token = startSession(user)
     hub?.broadcastLeaderboard()
-    hub?.herald(`⚑ House ${user.name} has founded a realm.`)
+    postHerald(store, hub, `⚑ House ${user.name} has founded a realm.`)
     res.status(201).json({ token, user: publicUser(user) })
   })
 
@@ -149,7 +173,11 @@ export function createApp(store, hub = null) {
   })
 
   app.get('/api/online', (_req, res) => {
-    res.json({ online: hub ? hub.onlineNames() : [] })
+    res.json({ online: onlineNames(store, hub) })
+  })
+
+  app.get('/api/herald', (_req, res) => {
+    res.json({ herald: store.data.herald })
   })
 
   const heraldLast = new Map()
@@ -165,7 +193,7 @@ export function createApp(store, hub = null) {
       return
     }
     heraldLast.set(req.user.id, Date.now())
-    hub?.herald(message, req.user.name)
+    postHerald(store, hub, message, req.user.name)
     res.json({ ok: true })
   })
 
@@ -173,7 +201,7 @@ export function createApp(store, hub = null) {
 }
 
 export function leaderboard(store, hub = null) {
-  const online = new Set((hub ? hub.onlineNames() : []).map((n) => n.toLowerCase()))
+  const online = new Set(onlineNames(store, hub).map((n) => n.toLowerCase()))
   return Object.values(store.data.users)
     .map((u) => ({
       name: u.name,
