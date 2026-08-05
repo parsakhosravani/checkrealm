@@ -3,12 +3,12 @@ export function SceneLights() {
     <>
       <color attach="background" args={['#0a1410']} />
       <fog attach="fog" args={['#0a1410', 18, 42]} />
-      <ambientLight intensity={0.6} color="#c8d5c4" />
-      <hemisphereLight args={['#dfe8dc', '#1a3026', 0.45]} />
+      <ambientLight intensity={0.85} color="#c8d5c4" />
+      <hemisphereLight args={['#dfe8dc', '#1a3026', 0.55]} />
       <directionalLight
         castShadow
         position={[8, 14, 6]}
-        intensity={1.5}
+        intensity={1.9}
         color="#fff2d0"
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
