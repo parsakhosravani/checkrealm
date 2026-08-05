@@ -64,7 +64,7 @@ export function GameShell({
         </nav>
       </header>
 
-      <main className="main">
+      <main className={`main${view === 'reports' ? '' : ' main--stage'}`}>
         {view === 'kingdom' && (
           <KingdomView village={village} now={now} onUpgrade={onUpgrade} />
         )}

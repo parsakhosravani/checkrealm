@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { BUILDINGS, RESOURCE_META } from '../game/constants'
 import {
   canAfford,
@@ -7,6 +8,7 @@ import {
   scaleCost,
 } from '../game/engine'
 import type { Resources, Village } from '../game/types'
+import { KingdomScene } from '../three/KingdomScene'
 
 interface KingdomViewProps {
   village: Village
@@ -15,58 +17,65 @@ interface KingdomViewProps {
 }
 
 export function KingdomView({ village, now, onUpgrade }: KingdomViewProps) {
+  const [selectedSlot, setSelectedSlot] = useState<number | null>(0)
   const job = village.construction
   const throneLvl = getBuildingLevel(village, 'throne')
 
+  const slot =
+    selectedSlot != null ? village.slots[selectedSlot] : null
+  const def = slot?.buildingId ? BUILDINGS[slot.buildingId] : null
+  const nextLevel = slot ? slot.level + 1 : 0
+  const atMax = def && slot ? slot.level >= def.maxLevel : false
+  const cost =
+    def && slot && !atMax
+      ? scaleCost(def.baseCost, nextLevel, def.costGrowth)
+      : null
+  const affordable = cost ? canAfford(village.resources, cost) : false
+  const prodKey = def?.production
+    ? (Object.keys(def.production)[0] as keyof Resources)
+    : null
+
   return (
-    <section className="panel">
-      <div className="panel__head">
-        <div>
-          <h2>{village.name}</h2>
-          <p>
-            Population {village.population} · Throne rank {throneLvl}. Upgrade fields
-            and halls to fuel your campaign across the board.
-          </p>
+    <section className="view-3d">
+      <KingdomScene
+        village={village}
+        selectedSlot={selectedSlot}
+        onSelectSlot={setSelectedSlot}
+      />
+
+      <aside className="hud-panel">
+        <div className="panel__head">
+          <div>
+            <h2>{village.name}</h2>
+            <p>
+              Population {village.population} · Throne rank {throneLvl}. Explore your
+              3D plaza and raise the halls of the realm.
+            </p>
+          </div>
         </div>
-      </div>
 
-      {job && (
-        <div className="queue-banner">
-          Raising {BUILDINGS[job.buildingId].name} to rank {job.targetLevel} —{' '}
-          {formatDuration(job.finishesAt - now)} remaining
-        </div>
-      )}
+        {job && (
+          <div className="queue-banner">
+            Raising {BUILDINGS[job.buildingId].name} to rank {job.targetLevel} —{' '}
+            {formatDuration(job.finishesAt - now)} remaining
+          </div>
+        )}
 
-      <div className="kingdom-grid">
-        {village.slots.map((slot, index) => {
-          if (!slot.buildingId) return null
-          const def = BUILDINGS[slot.buildingId]
-          const nextLevel = slot.level + 1
-          const atMax = slot.level >= def.maxLevel
-          const cost = atMax
-            ? null
-            : scaleCost(def.baseCost, nextLevel, def.costGrowth)
-          const affordable = cost ? canAfford(village.resources, cost) : false
-          const isBuilding = job?.slotIndex === index
-          const prodKey = def.production
-            ? (Object.keys(def.production)[0] as keyof Resources)
-            : null
-
-          return (
-            <article
-              key={index}
-              className={`slot${isBuilding ? ' is-building' : ''}`}
-            >
-              <div className="slot__symbol" aria-hidden>
-                {def.symbol}
-              </div>
-              <div className="slot__name">{def.name}</div>
-              <div className="slot__level">
-                {slot.level === 0 ? 'Not founded' : `Rank ${slot.level}`}
-                {atMax ? ' · Max' : ''}
-              </div>
+        {def && slot ? (
+          <div className="inspect-card">
+            <div className="inspect-card__symbol" aria-hidden>
+              {def.symbol}
+            </div>
+            <div>
+              <h3>
+                {def.name}{' '}
+                <span>
+                  {slot.level === 0 ? '· Not founded' : `· Rank ${slot.level}`}
+                </span>
+              </h3>
+              <p>{def.description}</p>
               {prodKey && slot.level > 0 && (
-                <div className="slot__prod">
+                <p className="inspect-card__prod">
                   +
                   {formatNumber(
                     Math.floor(
@@ -76,10 +85,10 @@ export function KingdomView({ village, now, onUpgrade }: KingdomViewProps) {
                     ),
                   )}{' '}
                   {RESOURCE_META[prodKey].name}/h
-                </div>
+                </p>
               )}
               {cost && (
-                <div className="slot__cost">
+                <div className="slot__cost" style={{ marginTop: '0.65rem' }}>
                   {(Object.keys(cost) as (keyof Resources)[]).map((id) => (
                     <span
                       key={id}
@@ -95,20 +104,25 @@ export function KingdomView({ village, now, onUpgrade }: KingdomViewProps) {
               )}
               <button
                 type="button"
-                className="slot__action"
-                disabled={atMax || !!job || !affordable}
-                onClick={() => onUpgrade(index)}
+                className="btn btn--gold"
+                style={{ marginTop: '0.85rem' }}
+                disabled={!!atMax || !!job || !affordable}
+                onClick={() => selectedSlot != null && onUpgrade(selectedSlot)}
               >
                 {atMax
                   ? 'Complete'
                   : slot.level === 0
-                    ? 'Found'
+                    ? 'Found Structure'
                     : `Upgrade → ${nextLevel}`}
               </button>
-            </article>
-          )
-        })}
-      </div>
+            </div>
+          </div>
+        ) : (
+          <p className="empty" style={{ padding: '1rem 0' }}>
+            Select a pedestal in the 3D plaza.
+          </p>
+        )}
+      </aside>
     </section>
   )
 }

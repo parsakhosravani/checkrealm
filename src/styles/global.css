@@ -80,19 +80,15 @@ a {
   isolation: isolate;
 }
 
-.landing__board {
+.landing__canvas {
   position: absolute;
   inset: 0;
   z-index: -2;
-  background-image:
-    linear-gradient(45deg, var(--felt-mid) 25%, transparent 25%),
-    linear-gradient(-45deg, var(--felt-mid) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, var(--felt-mid) 75%),
-    linear-gradient(-45deg, transparent 75%, var(--felt-mid) 75%);
-  background-size: 72px 72px;
-  background-position: 0 0, 0 36px, 36px -36px, -36px 0;
-  opacity: 0.55;
-  animation: board-drift 40s linear infinite;
+}
+
+.landing__canvas canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .landing__veil {
@@ -100,11 +96,14 @@ a {
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(circle at 70% 40%, rgba(201, 162, 39, 0.18), transparent 35%),
-    linear-gradient(180deg, rgba(8, 14, 11, 0.25) 0%, rgba(8, 14, 11, 0.85) 70%, #080e0b 100%);
+    radial-gradient(circle at 50% 42%, rgba(10, 20, 14, 0.05), transparent 42%),
+    linear-gradient(180deg, rgba(8, 14, 11, 0.1) 0%, rgba(8, 14, 11, 0.45) 50%, rgba(8, 14, 11, 0.92) 100%);
+  pointer-events: none;
 }
 
 .landing__content {
+  position: relative;
+  z-index: 1;
   width: min(720px, calc(100% - 2rem));
   text-align: center;
   padding: 2.5rem 1.5rem 3rem;
@@ -210,26 +209,6 @@ a {
   transform: none;
 }
 
-.landing__pieces {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  overflow: hidden;
-}
-
-.landing__piece {
-  position: absolute;
-  font-size: clamp(3rem, 8vw, 5rem);
-  color: rgba(240, 230, 210, 0.08);
-  animation: piece-float 12s ease-in-out infinite;
-}
-
-.landing__piece:nth-child(1) { top: 12%; left: 8%; animation-delay: 0s; }
-.landing__piece:nth-child(2) { top: 18%; right: 10%; animation-delay: -2s; }
-.landing__piece:nth-child(3) { bottom: 16%; left: 14%; animation-delay: -4s; }
-.landing__piece:nth-child(4) { bottom: 22%; right: 16%; animation-delay: -6s; }
-
 /* ——— Game chrome ——— */
 .topbar {
   display: flex;
@@ -334,6 +313,132 @@ a {
   width: min(1180px, 100%);
   margin: 0 auto;
   padding: 1.25rem;
+}
+
+.main--stage {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 88px);
+}
+
+/* ——— 3D stages ——— */
+.view-3d {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: calc(100vh - 88px);
+  position: relative;
+}
+
+@media (min-width: 960px) {
+  .view-3d {
+    grid-template-columns: 1fr min(380px, 34vw);
+  }
+}
+
+.scene-frame {
+  position: relative;
+  min-height: 420px;
+  height: 100%;
+  background: radial-gradient(ellipse at 50% 30%, #1a3026 0%, #0a1410 70%);
+  border-bottom: 1px solid var(--line);
+}
+
+@media (min-width: 960px) {
+  .scene-frame {
+    border-bottom: none;
+    border-right: 1px solid var(--line);
+    min-height: calc(100vh - 88px);
+  }
+}
+
+.scene-frame canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  touch-action: none;
+}
+
+.scene-frame--kingdom,
+.scene-frame--army {
+  background: radial-gradient(ellipse at 40% 20%, #243d30 0%, #0a1410 65%);
+}
+
+.scene-hint {
+  position: absolute;
+  left: 0.85rem;
+  bottom: 0.75rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(8, 14, 11, 0.7);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--ivory-dim);
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+}
+
+.hud-panel {
+  padding: 1.15rem 1.25rem 1.5rem;
+  background: linear-gradient(180deg, rgba(12, 22, 17, 0.96), rgba(8, 14, 11, 0.98));
+  overflow: auto;
+  max-height: calc(100vh - 88px);
+  border-top: 1px solid var(--line);
+}
+
+@media (min-width: 960px) {
+  .hud-panel {
+    border-top: none;
+  }
+}
+
+.inspect-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.9rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.28);
+  animation: rise-in 0.35s ease both;
+}
+
+.inspect-card__symbol {
+  font-size: 2.2rem;
+  color: var(--gold-bright);
+  line-height: 1;
+}
+
+.inspect-card h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+}
+
+.inspect-card h3 span {
+  color: var(--ivory-dim);
+  font-weight: 400;
+  font-size: 0.85rem;
+}
+
+.inspect-card p {
+  margin: 0.35rem 0 0;
+  color: var(--ivory-dim);
+  font-size: 0.9rem;
+}
+
+.inspect-card__prod {
+  color: var(--success) !important;
+}
+
+.unit-card--focus {
+  border-color: rgba(201, 162, 39, 0.65);
+  background: rgba(201, 162, 39, 0.08);
 }
 
 .panel {

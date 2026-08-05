@@ -43,7 +43,15 @@ AI houses expand, train, and occasionally raid you so the board stays alive.
 
 - React 19 + TypeScript
 - Vite
+- **Three.js** via React Three Fiber + Drei (3D board, plaza, and piece previews)
 - Pure client-side game engine (no backend required for this version)
+
+### 3D views
+
+- **Landing** — rotating 3D chessboard with floating pieces
+- **Kingdom** — orbitable plaza of structure pedestals (click to upgrade)
+- **Army** — auto-rotating 3D unit preview
+- **Board** — full 3D world map; drag to orbit, click keeps to march
 
 ## Roadmap ideas
 

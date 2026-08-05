@@ -1,3 +1,5 @@
+import { LandingScene } from '../three/LandingScene'
+
 interface LandingProps {
   hasSave: boolean
   onStart: (name: string) => void
@@ -7,14 +9,8 @@ interface LandingProps {
 export function Landing({ hasSave, onStart, onContinue }: LandingProps) {
   return (
     <section className="landing">
-      <div className="landing__board" aria-hidden />
+      <LandingScene />
       <div className="landing__veil" aria-hidden />
-      <div className="landing__pieces" aria-hidden>
-        <span className="landing__piece">♜</span>
-        <span className="landing__piece">♞</span>
-        <span className="landing__piece">♝</span>
-        <span className="landing__piece">♛</span>
-      </div>
 
       <div className="landing__content">
         <h1 className="landing__brand">
@@ -22,8 +18,8 @@ export function Landing({ hasSave, onStart, onContinue }: LandingProps) {
           <span>Realm</span>
         </h1>
         <p className="landing__tag">
-          A kingdom-builder on a living chessboard. Gather timber and grain, raise
-          armies of pieces, and take the enemy king&apos;s square.
+          A 3D kingdom-builder on a living chessboard. Gather timber and grain,
+          raise armies of pieces, and take the enemy king&apos;s square.
         </p>
 
         <form
