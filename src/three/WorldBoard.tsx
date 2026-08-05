@@ -5,6 +5,7 @@ import { MAP_SIZE } from '../game/constants'
 import type { GameState, Village } from '../game/types'
 import { BoardTiles, boardToWorld } from './BoardTiles'
 import { ChessPiece } from './ChessPiece'
+import { Atmosphere } from './Effects'
 import { SceneLights } from './SceneLights'
 
 interface WorldBoardProps {
@@ -115,6 +116,7 @@ function WorldScene({ state, selectedId, onSelectVillage }: WorldBoardProps) {
   return (
     <>
       <SceneLights />
+      <Atmosphere emberCount={70} emberArea={20} fireflies={false} />
       <BoardTiles
         highlight={highlight}
         onTileClick={(x, y) => {

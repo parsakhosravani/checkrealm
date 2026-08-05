@@ -3,7 +3,9 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { Float } from '@react-three/drei'
 import type { Group } from 'three'
 import { BoardTiles } from './BoardTiles'
+import { Character } from './Character'
 import { ChessPiece } from './ChessPiece'
+import { Atmosphere, TorchLight } from './Effects'
 
 function RotatingBoard() {
   const ref = useRef<Group>(null)
@@ -31,6 +33,29 @@ function RotatingBoard() {
       </Float>
       <ChessPiece kind="pawn" color="#2a2420" accent="#c9a227" position={[3.6, 0.05, -2.4]} scale={0.8} />
       <ChessPiece kind="pawn" color="#f0e6d2" accent="#c9a227" position={[-3.6, 0.05, 2.4]} scale={0.8} />
+
+      {/* Heroes guarding the board */}
+      <Character
+        role="knight"
+        animation="idle"
+        position={[-3.2, 0.02, -0.6]}
+        rotation={0.8}
+        scale={1.05}
+      />
+      <Character
+        role="mage"
+        animation="idle"
+        position={[3.3, 0.02, 0.4]}
+        rotation={-1}
+        scale={1.05}
+      />
+      <Character
+        role="villager"
+        position={[0, 0.02, 0]}
+        patrolRadius={4.4}
+        patrolSpeed={0.35}
+        scale={0.9}
+      />
     </group>
   )
 }
@@ -59,6 +84,9 @@ export function LandingScene() {
       >
         <Suspense fallback={null}>
           <LandingLights />
+          <Atmosphere emberCount={80} emberArea={18} />
+          <TorchLight position={[-4, 2.5, 2]} />
+          <TorchLight position={[4, 2.5, -2]} color="#c9a227" />
           <RotatingBoard />
         </Suspense>
       </Canvas>

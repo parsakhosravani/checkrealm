@@ -5,7 +5,9 @@ import { useRef } from 'react'
 import type { Group } from 'three'
 import { BUILDINGS } from '../game/constants'
 import type { BuildingId, Village } from '../game/types'
+import { Character } from './Character'
 import { ChessPiece, type PieceKind } from './ChessPiece'
+import { Atmosphere, TorchLight } from './Effects'
 import { SceneLights } from './SceneLights'
 
 interface KingdomSceneProps {
@@ -214,11 +216,41 @@ function KingdomWorld({ village, selectedSlot, onSelectSlot }: KingdomSceneProps
     [village, selectedSlot, onSelectSlot],
   )
 
+  const population = village.population
+
   return (
     <>
       <SceneLights />
+      <Atmosphere emberCount={50} emberArea={13} />
+      <TorchLight position={[-2.5, 1.6, 2.5]} />
+      <TorchLight position={[2.5, 1.6, -2.5]} color="#c9a227" />
       <Ground />
       {markers}
+
+      {/* Citizens of the realm — more villagers as the kingdom grows */}
+      <Character role="knight" position={[0.9, 0, 1.1]} rotation={-2.2} scale={0.72} />
+      <Character
+        role="villager"
+        position={[0, 0, 0]}
+        patrolRadius={4.6}
+        patrolSpeed={0.3}
+        scale={0.62}
+      />
+      {population > 60 && (
+        <Character
+          role="villager"
+          position={[0, 0, 0]}
+          patrolRadius={5.4}
+          patrolSpeed={-0.24}
+          patrolPhase={40}
+          scale={0.62}
+          cloth="#4a5c3d"
+        />
+      )}
+      {population > 120 && (
+        <Character role="mage" position={[-1.1, 0, 1.3]} rotation={2.1} scale={0.7} />
+      )}
+
       <ContactShadows position={[0, -0.06, 0]} opacity={0.5} scale={16} blur={2.8} far={10} />
       <OrbitControls
         makeDefault
