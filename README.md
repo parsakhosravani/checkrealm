@@ -1,71 +1,66 @@
 # CheckRealm
 
-CheckRealm is a tiny web app that checks whether a website is **real and reachable**.
-Enter a URL and it resolves the domain, sends an HTTP request, measures the response
-time, and returns a verdict: `real`, `suspicious`, or `unreachable`.
+**CheckRealm** is a browser strategy game in the spirit of [Travian](https://www.travian.com/) — kingdom building, resource economies, troop training, and world-map warfare — redesigned around chess.
 
-## Stack
+Build your seat on the board, raise pawns and knights, and march on rival keeps.
 
-- **Runtime:** Node.js (>= 20), ES modules
-- **Server:** Express — serves the static UI and a small JSON API
-- **Frontend:** vanilla HTML/CSS/JS (no build step)
-- **Tests:** Node's built-in test runner (`node --test`)
-
-## Getting started
+## Play
 
 ```bash
 npm install
-npm run dev      # start with auto-reload on http://localhost:3000
-# or
-npm start        # start without watch
+npm run dev
 ```
 
-Then open http://localhost:3000 and check a URL.
-
-## Scripts
-
-| Command         | Description                              |
-| --------------- | ---------------------------------------- |
-| `npm start`     | Start the server (`src/server.js`)       |
-| `npm run dev`   | Start with `node --watch` auto-reload    |
-| `npm test`      | Run the unit tests                       |
-| `npm run lint`  | Lint the codebase with ESLint            |
-
-## API
-
-### `GET /api/health`
-
-Returns service status.
-
-```json
-{ "status": "ok", "service": "checkrealm", "time": "..." }
-```
-
-### `GET /api/check?url=<url>`
-
-Checks a URL (bare hostnames are treated as `https`).
+Open the local URL Vite prints (usually `http://localhost:5173`).
 
 ```bash
-curl "http://localhost:3000/api/check?url=example.com"
+npm run build    # production build
+npm run preview  # serve the build
 ```
 
-```json
-{
-  "input": "example.com",
-  "url": "https://example.com/",
-  "reachable": true,
-  "status": 200,
-  "statusText": "OK",
-  "redirected": false,
-  "finalUrl": "https://example.com/",
-  "elapsedMs": 123,
-  "verdict": "real",
-  "checkedAt": "..."
-}
-```
+Progress is saved in your browser (`localStorage`).
 
-## Cloud Agent environment
+## How it works
 
-The development environment is defined in [`.cursor/environment.json`](.cursor/environment.json):
-`npm install` refreshes dependencies and the `dev-server` terminal runs `npm run dev`
-on port `3000`.
+| Travian idea | CheckRealm |
+| --- | --- |
+| Wood / Clay / Iron / Crop | **Timber · Ivory · Steel · Grain** |
+| Village buildings | Throne Hall, resource yards, Barracks, Knight Stable, Siege Works, Royal Court, Ramparts |
+| Troops | **Pawn, Bishop, Knight, Rook, Queen** |
+| World map | 9×9 chessboard of kingdoms |
+| Raids & attacks | March pieces, resolve combat, loot resources |
+
+### Loop
+
+1. **Kingdom** — upgrade fields and halls to grow production and unlock military buildings.
+2. **Army** — train pieces (requires the matching building rank).
+3. **Board** — pick an enemy keep, choose an army, march to attack or raid.
+4. **Reports** — read battle outcomes and spoils.
+
+AI houses expand, train, and occasionally raid you so the board stays alive.
+
+## Stack
+
+- React 19 + TypeScript
+- Vite
+- **Three.js** via React Three Fiber + Drei (3D board, plaza, and piece previews)
+- Pure client-side game engine (no backend required for this version)
+
+### 3D views
+
+- **Landing** — rotating 3D chessboard with floating pieces
+- **Kingdom** — orbitable plaza of structure pedestals (click to upgrade)
+- **Army** — auto-rotating 3D unit preview
+- **Board** — full 3D world map; drag to orbit, click keeps to march
+
+## Roadmap ideas
+
+- Alliances / kingdoms of many villages
+- Marketplace trading
+- Heroes & research trees
+- Multiplayer / persistent server
+- Oasis tiles and reinforcements
+
+## License
+
+MIT
