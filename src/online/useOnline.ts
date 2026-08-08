@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { setSaveScope } from '../game/save'
 import type { GameState } from '../game/types'
 import {
   api,
@@ -62,6 +63,7 @@ export function useOnline(): Online {
       try {
         const { user: me } = await api.me()
         if (cancelled) return
+        setSaveScope(me.name)
         setUser(me)
         await loadServerSave()
       } catch {
@@ -75,7 +77,8 @@ export function useOnline(): Online {
     }
   }, [loadServerSave])
 
-  // Realtime connection follows the signed-in user.
+  // Realtime connection follows the signed-in user. When the host cannot
+  // hold a WebSocket open (e.g. serverless), fall back to HTTP polling.
   const userName = user?.name ?? null
   useEffect(() => {
     if (!userName) {
@@ -85,6 +88,32 @@ export function useOnline(): Online {
     }
     let disposed = false
     let reconnectTimer: number | undefined
+    let pollTimer: number | undefined
+
+    async function pollOnce() {
+      try {
+        const [lb, online, herald] = await Promise.all([
+          api.leaderboard(),
+          api.online(),
+          api.heraldLog(),
+        ])
+        // An authed heartbeat keeps this player marked online server-side.
+        api.me().catch(() => {})
+        if (disposed) return
+        setEntries(lb.entries)
+        setOnlineNames(online.online)
+        setHerald(herald.herald.slice(-HERALD_MAX))
+        setConnected(true)
+      } catch {
+        if (!disposed) setConnected(false)
+      }
+    }
+
+    function startPolling() {
+      if (pollTimer || disposed) return
+      pollOnce()
+      pollTimer = window.setInterval(pollOnce, 8000)
+    }
 
     function connect() {
       const token = getToken()
@@ -120,6 +149,11 @@ export function useOnline(): Online {
         setConnected(false)
         wsRef.current = null
         if (disposed || closedByUs.current) return
+        if (retryRef.current >= 2) {
+          // WebSocket keeps failing — the host likely doesn't support it.
+          startPolling()
+          return
+        }
         const delay = Math.min(15000, 1000 * 2 ** retryRef.current)
         retryRef.current += 1
         reconnectTimer = window.setTimeout(connect, delay)
@@ -131,6 +165,7 @@ export function useOnline(): Online {
     return () => {
       disposed = true
       window.clearTimeout(reconnectTimer)
+      window.clearInterval(pollTimer)
       closedByUs.current = true
       wsRef.current?.close()
       wsRef.current = null
@@ -147,6 +182,7 @@ export function useOnline(): Online {
             ? await api.login(username, password)
             : await api.register(username, password)
         setToken(token)
+        setSaveScope(me.name)
         setUser(me)
         await loadServerSave()
         return true
@@ -172,6 +208,7 @@ export function useOnline(): Online {
   const logout = useCallback(() => {
     api.logout().catch(() => {})
     setToken(null)
+    setSaveScope(null)
     setUser(null)
     setServerSave(null)
     setEntries([])

@@ -83,6 +83,8 @@ export const api = {
   putSave: (state: GameState | null, score: number, victories: number) =>
     request<{ ok: true; user: OnlineUser }>('PUT', '/api/save', { state, score, victories }),
   leaderboard: () => request<{ entries: LeaderboardEntry[] }>('GET', '/api/leaderboard'),
+  online: () => request<{ online: string[] }>('GET', '/api/online'),
+  heraldLog: () => request<{ herald: HeraldEntry[] }>('GET', '/api/herald'),
   herald: (message: string) => request<{ ok: true }>('POST', '/api/herald', { message }),
 }
 

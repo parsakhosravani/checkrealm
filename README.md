@@ -100,7 +100,27 @@ docker run -p 3000:3000 -v checkrealm-data:/app/data checkrealm
 
 The named volume keeps accounts, saves and the leaderboard across restarts.
 
-> Note: the server keeps WebSocket connections and a single JSON data file, so it wants a long-running Node process (one instance). Serverless platforms (e.g. Vercel functions) are not a fit without swapping the store for a database.
+### Vercel
+
+The repo is Vercel-ready: the Vite frontend deploys as static output and the API runs as a serverless function (`api/index.js` + `vercel.json`). Serverless functions can't hold WebSockets open, so on Vercel the client automatically falls back to HTTP polling (leaderboard, presence and herald refresh every 8 s; presence is derived from recent activity).
+
+```bash
+npx vercel link          # link the repo to a Vercel project (once)
+npx vercel deploy        # preview deployment
+npx vercel --prod        # production deployment
+```
+
+**Persistence on Vercel:** the serverless filesystem is ephemeral. Install Upstash Redis from the Vercel Marketplace so accounts and the leaderboard survive:
+
+```bash
+npx vercel integration add upstash   # pick the Redis product when prompted
+```
+
+The store detects the injected `KV_REST_API_URL`/`KV_REST_API_TOKEN` (or `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN`) env vars and keeps the whole database under one Redis key. Without Redis the app still runs, but data lives in `/tmp` and resets between instances.
+
+Simulate the Vercel constraints locally with `CHECKREALM_NO_WS=1 npm start` (WebSocket upgrades refused → the client switches to polling).
+
+> For always-on WebSockets and file persistence, prefer a long-running Node host (Railway, Render, Fly.io, Docker, a VPS).
 
 ## License
 
