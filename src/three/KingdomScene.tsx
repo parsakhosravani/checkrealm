@@ -1,14 +1,21 @@
 import { Suspense, useMemo } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas } from '@react-three/fiber'
 import { ContactShadows, OrbitControls, Text } from '@react-three/drei'
-import { useRef } from 'react'
-import type { Group } from 'three'
 import { BUILDINGS } from '../game/constants'
 import type { BuildingId, Village } from '../game/types'
 import { Character } from './Character'
-import { ChessPiece, type PieceKind } from './ChessPiece'
-import { Atmosphere, TorchLight } from './Effects'
+import { Atmosphere } from './Effects'
 import { SceneLights } from './SceneLights'
+import {
+  BuildingModel,
+  BuildingPlot,
+  Bush,
+  Flowers,
+  GRASS,
+  DIRT,
+  TownWall,
+  Tree,
+} from './Village'
 
 interface KingdomSceneProps {
   village: Village
@@ -45,30 +52,20 @@ const SLOT_LAYOUT: [number, number][] = [
   [0, 3.2],
 ]
 
-function buildingPiece(id: BuildingId): PieceKind {
-  switch (id) {
-    case 'throne':
-      return 'king'
-    case 'barracks':
-      return 'pawn'
-    case 'stable':
-      return 'knight'
-    case 'siegeWorks':
-      return 'rook'
-    case 'royalCourt':
-      return 'queen'
-    case 'ramparts':
-      return 'rook'
-    case 'ivoryQuarry':
-      return 'bishop'
-    case 'steelForge':
-      return 'knight'
-    case 'grainField':
-      return 'pawn'
-    default:
-      return 'bishop'
-  }
-}
+const TREES: [number, number, number][] = [
+  [-6.6, 0, -3.4],
+  [6.9, 0, -2.2],
+  [-7.2, 0, 1.8],
+  [6.4, 0, 3.6],
+  [-4.5, 0, -6.2],
+  [4.2, 0, -6.7],
+  [-3.2, 0, 6.9],
+  [2.4, 0, 7.3],
+  [7.4, 0, 0.6],
+  [-6.2, 0, 4.4],
+  [1.2, 0, -7.5],
+  [-1.6, 0, -7.1],
+]
 
 function BuildingMarker({
   index,
@@ -85,24 +82,16 @@ function BuildingMarker({
   constructing: boolean
   onSelect: () => void
 }) {
-  const ref = useRef<Group>(null)
   const [x, z] = SLOT_LAYOUT[index] ?? [0, 0]
   const def = BUILDINGS[buildingId]
-  const scale = 0.45 + level * 0.08
-  const color = level === 0 ? '#4a5548' : index % 2 === 0 ? '#f0e6d2' : '#2a2420'
-  const accent = level === 0 ? '#6a7568' : '#c9a227'
-
-  useFrame(({ clock }) => {
-    if (!ref.current || !constructing) return
-    ref.current.rotation.y = clock.elapsedTime * 1.2
-  })
 
   return (
-    <group ref={ref} position={[x, 0, z]}>
-      {/* Pedestal */}
+    <group position={[x, 0, z]}>
+      {/* Clickable lot */}
       <mesh
         receiveShadow
-        position={[0, -0.02, 0]}
+        position={[0, 0.005, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
         onClick={(e) => {
           e.stopPropagation()
           onSelect()
@@ -114,45 +103,40 @@ function BuildingMarker({
           document.body.style.cursor = 'default'
         }}
       >
-        <cylinderGeometry args={[0.55, 0.62, 0.1, 16]} />
+        <circleGeometry args={[0.58, 20]} />
         <meshStandardMaterial
-          color={selected ? '#3d6b4f' : '#1a3026'}
-          roughness={0.7}
-          metalness={0.1}
+          color={selected ? '#c8b26a' : level > 0 || constructing ? '#8fae56' : DIRT}
+          roughness={0.9}
         />
       </mesh>
-      {level > 0 || constructing ? (
-        <ChessPiece
-          kind={buildingPiece(buildingId)}
-          color={color}
-          accent={accent}
-          position={[0, 0.05, 0]}
-          scale={scale}
-          selected={selected}
-          onClick={(e) => {
-            e.stopPropagation()
-            onSelect()
-          }}
-        />
-      ) : (
-        <mesh
-          position={[0, 0.15, 0]}
-          onClick={(e) => {
-            e.stopPropagation()
-            onSelect()
-          }}
-        >
-          <boxGeometry args={[0.35, 0.2, 0.35]} />
-          <meshStandardMaterial color="#3a453c" roughness={0.8} transparent opacity={0.7} />
+
+      <group
+        onClick={(e) => {
+          e.stopPropagation()
+          onSelect()
+        }}
+      >
+        {level > 0 || constructing ? (
+          <BuildingModel buildingId={buildingId} level={Math.max(level, 1)} constructing={constructing} />
+        ) : (
+          <BuildingPlot />
+        )}
+      </group>
+
+      {selected && (
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
+          <ringGeometry args={[0.6, 0.72, 32]} />
+          <meshBasicMaterial color="#c9a227" transparent opacity={0.9} />
         </mesh>
       )}
+
       <Text
-        position={[0, 1.35 * Math.max(scale, 0.5), 0]}
-        fontSize={0.16}
-        color={selected ? '#e0bc45' : '#cbbfa8'}
+        position={[0, 1.35, 0]}
+        fontSize={0.17}
+        color={selected ? '#7a5a10' : '#3d3020'}
         anchorX="center"
-        outlineWidth={0.015}
-        outlineColor="#0a100d"
+        outlineWidth={0.016}
+        outlineColor="#f5ecd8"
       >
         {def.name.split(' ')[0]}
         {level > 0 ? ` ${level}` : ''}
@@ -164,33 +148,42 @@ function BuildingMarker({
 function Ground() {
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.08, 0]} receiveShadow>
-        <circleGeometry args={[7.5, 64]} />
-        <meshStandardMaterial color="#14261c" roughness={0.9} />
+      {/* Countryside */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.12, 0]} receiveShadow>
+        <circleGeometry args={[16, 48]} />
+        <meshStandardMaterial color="#6c9a3e" roughness={0.95} />
       </mesh>
-      {/* Inner checkered plaza */}
-      {Array.from({ length: 49 }, (_, i) => {
-        const x = (i % 7) - 3
-        const z = Math.floor(i / 7) - 3
-        const light = (x + z) % 2 === 0
-        return (
-          <mesh
-            key={i}
-            rotation={[-Math.PI / 2, 0, 0]}
-            position={[x * 1.05, -0.05, z * 1.05]}
-            receiveShadow
-          >
-            <planeGeometry args={[1.0, 1.0]} />
-            <meshStandardMaterial
-              color={light ? '#2a4535' : '#1a3026'}
-              roughness={0.85}
-            />
-          </mesh>
-        )
-      })}
-      <mesh position={[0, -0.35, 0]} receiveShadow>
-        <cylinderGeometry args={[8.2, 8.6, 0.5, 48]} />
-        <meshStandardMaterial color="#1a1510" roughness={0.7} metalness={0.15} />
+      {/* Village green inside the wall */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.05, 0]} receiveShadow>
+        <circleGeometry args={[5.5, 48]} />
+        <meshStandardMaterial color={GRASS} roughness={0.9} />
+      </mesh>
+      {/* Ring road */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.03, 0]} receiveShadow>
+        <ringGeometry args={[3.95, 4.55, 48]} />
+        <meshStandardMaterial color={DIRT} roughness={0.95} />
+      </mesh>
+      {/* Plaza around the keep */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.03, 0]} receiveShadow>
+        <circleGeometry args={[1.05, 24]} />
+        <meshStandardMaterial color={DIRT} roughness={0.95} />
+      </mesh>
+      {/* Radial paths from plaza to ring road */}
+      {[0, 90, 180, 270].map((deg) => (
+        <mesh
+          key={deg}
+          rotation={[-Math.PI / 2, 0, (deg / 180) * Math.PI]}
+          position={[0, -0.035, 0]}
+          receiveShadow
+        >
+          <planeGeometry args={[0.5, 8.6]} />
+          <meshStandardMaterial color={DIRT} roughness={0.95} />
+        </mesh>
+      ))}
+      {/* Road out the gate */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.06, 8]} receiveShadow>
+        <planeGeometry args={[0.9, 6]} />
+        <meshStandardMaterial color="#b08a55" roughness={0.95} />
       </mesh>
     </group>
   )
@@ -221,45 +214,54 @@ function KingdomWorld({ village, selectedSlot, onSelectSlot }: KingdomSceneProps
   return (
     <>
       <SceneLights />
-      <Atmosphere emberCount={50} emberArea={13} />
-      <TorchLight position={[-2.5, 1.6, 2.5]} />
-      <TorchLight position={[2.5, 1.6, -2.5]} color="#c9a227" />
+      <Atmosphere emberCount={30} emberArea={12} />
       <Ground />
+      <TownWall radius={5.4} />
       {markers}
 
-      {/* Citizens of the realm — more villagers as the kingdom grows */}
-      <Character role="knight" position={[0.9, 0, 1.1]} rotation={-2.2} scale={0.72} />
+      {TREES.map((p, i) => (
+        <Tree key={i} position={p} scale={0.9 + (i % 3) * 0.25} />
+      ))}
+      <Bush position={[3.6, 0, 3.4]} />
+      <Bush position={[-3.7, 0, 3.1]} scale={1.3} />
+      <Bush position={[3.4, 0, -3.4]} scale={0.9} />
+      <Flowers position={[1.6, 0, 1.4]} />
+      <Flowers position={[-1.7, 0, 1.2]} />
+      <Flowers position={[1.3, 0, -1.6]} />
+
+      {/* Citizens — more villagers as the settlement grows */}
+      <Character role="knight" position={[0.9, 0, 1.2]} rotation={-2.2} scale={0.62} />
       <Character
         role="villager"
         position={[0, 0, 0]}
-        patrolRadius={4.6}
+        patrolRadius={4.25}
         patrolSpeed={0.3}
-        scale={0.62}
+        scale={0.56}
       />
       {population > 60 && (
         <Character
           role="villager"
           position={[0, 0, 0]}
-          patrolRadius={5.4}
+          patrolRadius={2.6}
           patrolSpeed={-0.24}
           patrolPhase={40}
-          scale={0.62}
-          cloth="#4a5c3d"
+          scale={0.56}
+          cloth="#4a6a3d"
         />
       )}
       {population > 120 && (
-        <Character role="mage" position={[-1.1, 0, 1.3]} rotation={2.1} scale={0.7} />
+        <Character role="mage" position={[-1.1, 0, 1.3]} rotation={2.1} scale={0.6} />
       )}
 
-      <ContactShadows position={[0, -0.06, 0]} opacity={0.5} scale={16} blur={2.8} far={10} />
+      <ContactShadows position={[0, -0.02, 0]} opacity={0.35} scale={18} blur={2.6} far={10} />
       <OrbitControls
         makeDefault
         enablePan={false}
-        minPolarAngle={0.4}
-        maxPolarAngle={1.3}
-        minDistance={6}
-        maxDistance={16}
-        target={[0, 0.4, 0]}
+        minPolarAngle={0.35}
+        maxPolarAngle={1.25}
+        minDistance={7}
+        maxDistance={18}
+        target={[0, 0.3, 0]}
       />
     </>
   )
@@ -270,14 +272,14 @@ export function KingdomScene(props: KingdomSceneProps) {
     <div className="scene-frame scene-frame--kingdom">
       <Canvas
         shadows="percentage"
-        camera={{ position: [7, 8, 9], fov: 40, near: 0.1, far: 60 }}
+        camera={{ position: [8, 9, 10], fov: 40, near: 0.1, far: 80 }}
         dpr={[1, 1.75]}
       >
         <Suspense fallback={null}>
           <KingdomWorld {...props} />
         </Suspense>
       </Canvas>
-      <div className="scene-hint">Click a structure to inspect · Drag to orbit</div>
+      <div className="scene-hint">Click a building to inspect · Drag to orbit</div>
     </div>
   )
 }

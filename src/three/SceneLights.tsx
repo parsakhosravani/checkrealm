@@ -1,25 +1,24 @@
 export function SceneLights() {
   return (
     <>
-      <color attach="background" args={['#0a1410']} />
-      <fog attach="fog" args={['#0a1410', 18, 42]} />
-      <ambientLight intensity={0.85} color="#c8d5c4" />
-      <hemisphereLight args={['#dfe8dc', '#1a3026', 0.55]} />
+      <color attach="background" args={['#9fc7dd']} />
+      <fog attach="fog" args={['#b6d3c9', 24, 55]} />
+      <ambientLight intensity={0.95} color="#fff6e0" />
+      <hemisphereLight args={['#cfe6f5', '#6f9c4e', 0.7]} />
       <directionalLight
         castShadow
-        position={[8, 14, 6]}
-        intensity={1.9}
-        color="#fff2d0"
+        position={[10, 16, 7]}
+        intensity={2.1}
+        color="#fff3d6"
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
-        shadow-camera-far={40}
-        shadow-camera-left={-14}
-        shadow-camera-right={14}
-        shadow-camera-top={14}
-        shadow-camera-bottom={-14}
+        shadow-camera-far={45}
+        shadow-camera-left={-15}
+        shadow-camera-right={15}
+        shadow-camera-top={15}
+        shadow-camera-bottom={-15}
       />
-      <pointLight position={[-6, 6, -4]} intensity={0.45} color="#6fa88a" />
-      <pointLight position={[4, 3, 8]} intensity={0.35} color="#c9a227" />
+      <directionalLight position={[-8, 6, -6]} intensity={0.35} color="#cfe0f0" />
     </>
   )
 }

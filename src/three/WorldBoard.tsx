@@ -66,7 +66,7 @@ function KingdomMarker({
     <group>
       <ChessPiece
         kind={isHuman ? 'king' : 'rook'}
-        color={isHuman ? '#f0e6d2' : '#2a2420'}
+        color={isHuman ? '#c23b2e' : '#4a3c2c'}
         accent={color}
         position={[x, 0.02, z]}
         scale={scale}
@@ -79,11 +79,11 @@ function KingdomMarker({
       <Text
         position={[x, 1.55 * scale, z]}
         fontSize={0.22}
-        color="#f0e6d2"
+        color="#3d3020"
         anchorX="center"
         anchorY="middle"
         outlineWidth={0.02}
-        outlineColor="#0a100d"
+        outlineColor="#f5ecd8"
       >
         {village.name.split(' ')[0]}
       </Text>

@@ -21,9 +21,9 @@ interface CharacterProps {
 }
 
 const ROLE_DEFAULTS: Record<CharacterRole, { cloth: string; accent: string }> = {
-  knight: { cloth: '#3d4a5c', accent: '#c9a227' },
-  mage: { cloth: '#43305c', accent: '#8f6fd0' },
-  villager: { cloth: '#5c4a32', accent: '#8a9a6a' },
+  knight: { cloth: '#b03a2e', accent: '#e0b23c' },
+  mage: { cloth: '#3a5f8a', accent: '#8fb8e8' },
+  villager: { cloth: '#8a6a3c', accent: '#a8bf6a' },
 }
 
 function Limb({

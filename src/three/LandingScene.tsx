@@ -6,10 +6,10 @@ import { Character } from './Character'
 import { ChessPiece, type PieceKind } from './ChessPiece'
 import { Atmosphere, TorchLight } from './Effects'
 
-const IVORY = '#f0e6d2'
-const EBONY = '#2a2420'
-const GOLD = '#c9a227'
-const CRIMSON = '#b54a3a'
+const LEGION_RED = '#c23b2e'
+const LEGION_GOLD = '#e0b23c'
+const HOST_DARK = '#41372a'
+const HOST_STEEL = '#8fb8e8'
 
 interface Deployment {
   kind: PieceKind
@@ -62,8 +62,8 @@ function BattleDiorama() {
   return (
     <group ref={ref} position={[0, -0.5, 0]} rotation={[0.46, 0.5, 0]} scale={0.85}>
       <BoardTiles />
-      <Army color={IVORY} accent={GOLD} flip={false} />
-      <Army color={EBONY} accent={CRIMSON} flip />
+      <Army color={LEGION_RED} accent={LEGION_GOLD} flip={false} />
+      <Army color={HOST_DARK} accent={HOST_STEEL} flip />
 
       {/* A duel already raging at the center of the field */}
       <Character role="knight" animation="cheer" position={[-0.65, 0.02, 0]} rotation={1.4} scale={0.95} />
@@ -74,7 +74,7 @@ function BattleDiorama() {
         rotation={-1.6}
         scale={0.95}
         cloth="#3a2c26"
-        accent={CRIMSON}
+        accent={HOST_STEEL}
       />
       <Character role="mage" animation="idle" position={[-2.2, 0.02, 0.7]} rotation={1.1} scale={0.9} />
       <Character
@@ -91,12 +91,11 @@ function BattleDiorama() {
 function LandingLights() {
   return (
     <>
-      <color attach="background" args={['#0a1410']} />
-      <fog attach="fog" args={['#0a1410', 18, 42]} />
-      <ambientLight intensity={0.95} color="#d5e0d2" />
-      <directionalLight position={[6, 12, 5]} intensity={2.2} color="#fff2d0" castShadow />
-      <pointLight position={[-5, 5, -3]} intensity={1.1} color="#6fa88a" />
-      <pointLight position={[3, 4, 6]} intensity={1.3} color="#c9a227" />
+      <color attach="background" args={['#9fc7dd']} />
+      <fog attach="fog" args={['#b6d3c9', 18, 44]} />
+      <ambientLight intensity={0.95} color="#fff6e0" />
+      <directionalLight position={[6, 12, 5]} intensity={2.2} color="#fff3d6" castShadow />
+      <hemisphereLight args={['#cfe6f5', '#6f9c4e', 0.6]} />
     </>
   )
 }

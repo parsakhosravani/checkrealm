@@ -26,7 +26,7 @@ function ArmyPreview({ focus }: { focus: UnitId }) {
       <SceneLights />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
         <circleGeometry args={[3.2, 48]} />
-        <meshStandardMaterial color="#1a3026" roughness={0.85} />
+        <meshStandardMaterial color="#79a844" roughness={0.9} />
       </mesh>
       <Float key={focus} speed={1.4} floatIntensity={0.35} rotationIntensity={0.2}>
         <ChessPiece

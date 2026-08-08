@@ -23,7 +23,7 @@ function Rock({ position, size }: { position: [number, number, number]; size: nu
   return (
     <mesh position={position} rotation={[size * 7, size * 13, size * 5]} castShadow>
       <dodecahedronGeometry args={[size, 0]} />
-      <meshStandardMaterial color="#4c463c" roughness={0.95} />
+      <meshStandardMaterial color="#9a9284" roughness={0.95} />
     </mesh>
   )
 }
@@ -34,7 +34,7 @@ function GrassTuft({ position, scale }: { position: [number, number, number]; sc
       {[-0.04, 0, 0.05].map((dx, i) => (
         <mesh key={i} position={[dx, 0.05, i * 0.03 - 0.03]} rotation={[0, i, dx * 4]} castShadow>
           <coneGeometry args={[0.015, 0.14, 4]} />
-          <meshStandardMaterial color="#3f5c33" roughness={0.9} />
+          <meshStandardMaterial color="#558030" roughness={0.9} />
         </mesh>
       ))}
     </group>
@@ -135,14 +135,14 @@ export function BoardTiles({
         const [wx, , wz] = boardToWorld(x, y)
         const h = 0.1 + rand(x, y) * 0.05
         const tint = rand(x, y, 1)
-        // Mossy field squares vs scorched earth squares.
+        // Sunlit meadow squares vs freshly-tilled darker squares.
         const base = light
           ? tint > 0.5
-            ? '#31533f'
-            : '#2c4b39'
+            ? '#8fb654'
+            : '#86ad4c'
           : tint > 0.5
-            ? '#22312a'
-            : '#263229'
+            ? '#6f9c40'
+            : '#679439'
         out.push({ x, y, wx, wz, h, base, jitter: (rand(x, y, 2) - 0.5) * 0.05 })
       }
     }
@@ -177,11 +177,11 @@ export function BoardTiles({
       {/* Earthen rampart around the field */}
       <mesh receiveShadow position={[0, -0.26, 0]}>
         <cylinderGeometry args={[edge * 0.78, edge * 0.86, 0.34, 10]} />
-        <meshStandardMaterial color="#241f16" roughness={0.95} />
+        <meshStandardMaterial color="#7d6238" roughness={0.95} />
       </mesh>
       <mesh receiveShadow position={[0, -0.1, 0]}>
         <boxGeometry args={[edge + 0.7, 0.14, edge + 0.7]} />
-        <meshStandardMaterial color="#33402e" roughness={0.9} />
+        <meshStandardMaterial color="#6c9a3e" roughness={0.9} />
       </mesh>
 
       {tiles.map((t) => {
@@ -205,7 +205,7 @@ export function BoardTiles({
             >
               <boxGeometry args={[TILE, t.h, TILE]} />
               <meshStandardMaterial
-                color={isHi ? '#3d6b4f' : t.base}
+                color={isHi ? '#d9c26a' : t.base}
                 roughness={0.9}
                 metalness={0.02}
               />
