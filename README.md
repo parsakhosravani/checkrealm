@@ -2,6 +2,8 @@
 
 **CheckRealm** is a 3D online browser strategy game in the spirit of [Travian](https://www.travian.com/) — kingdom building, resource economies, troop training, and world-map warfare — redesigned around chess.
 
+> **v2 (single-player rebuild)** is now the main page: an isometric chessboard, AI houses with personalities, rogue camps to raid, quests, and conquest with queens. It's one self-contained file (`index.html`) that saves to the browser. The original online version (accounts, cloud saves, live leaderboard) lives on at `/classic.html`.
+
 Create an account, build your seat on the board, raise pawns and knights, march on rival keeps, and climb the **live realm leaderboard**.
 
 ## Play
